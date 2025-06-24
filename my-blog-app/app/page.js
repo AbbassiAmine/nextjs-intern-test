@@ -1,5 +1,10 @@
 import Link from 'next/link';
 
+export const metadata = {
+  title: 'Home | My Website',
+  description: 'Welcome to my website',
+};
+
 export default function Home() {
   return (
     <div className="container mx-auto p-4">
@@ -13,3 +18,4 @@ export default function Home() {
     </div>
   );
 }
+

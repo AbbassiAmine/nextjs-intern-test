@@ -11,12 +11,13 @@ export default function Contact() {
   });
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
+  const [serverError, setServerError] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-   
     setErrors({ ...errors, [name]: '' });
+    setServerError(null);
   };
 
   const validateForm = () => {
@@ -35,7 +36,7 @@ export default function Contact() {
     return newErrors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
@@ -43,13 +44,27 @@ export default function Contact() {
       return;
     }
 
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
 
-    setSubmitted(true);
-    setFormData({ name: '', email: '', message: '' });
-    setErrors({});
+      if (!response.ok) {
+        const { error } = await response.json();
+        setServerError(error || 'Failed to send message');
+        return;
+      }
 
-
-    setTimeout(() => setSubmitted(false), 3000);
+      setSubmitted(true);
+      setFormData({ name: '', email: '', message: '' });
+      setErrors({});
+      setServerError(null);
+      setTimeout(() => setSubmitted(false), 3000);
+    } catch (err) {
+      setServerError('Network error occurred');
+    }
   };
 
   return (
@@ -58,6 +73,11 @@ export default function Contact() {
       {submitted && (
         <div className="mb-4 p-4 bg-green-100 text-green-700 rounded">
           Message sent successfully!
+        </div>
+      )}
+      {serverError && (
+        <div className="mb-4 p-4 bg-red-100 text-red-700 rounded">
+          {serverError}
         </div>
       )}
       <form onSubmit={handleSubmit} className="space-y-4">
