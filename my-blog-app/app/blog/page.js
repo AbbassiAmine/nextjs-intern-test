@@ -1,4 +1,5 @@
 import posts from '../data/posts.json';
+import Link from 'next/link';
 
 export default function Blog() {
     return (
@@ -7,6 +8,9 @@ export default function Blog() {
             <div className="space-y-4">
                 {posts.map((post) => (
                     <div key={post.id} className="border p-4 rounded">
+                        <Link href={`/blog/${post.slug}`} className="text-blue-600 hover:underline">
+                            <h2 className="text-xl font-semibold">{post.title}</h2>
+                        </Link>
                         <h2 className="text-xl font-semibold">{post.title}</h2>
                         <p>{post.summary}</p>
                     </div>
